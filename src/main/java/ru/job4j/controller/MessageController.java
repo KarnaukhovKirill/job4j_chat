@@ -3,6 +3,7 @@ package ru.job4j.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Message;
 import ru.job4j.service.MessageService;
 import ru.job4j.service.Service;
@@ -27,15 +28,22 @@ public class MessageController implements Controller<Message> {
     @GetMapping("/{id}")
     public ResponseEntity<Message> getById(@PathVariable int id) {
         var message = service.getById(id);
-        return new ResponseEntity<>(
-                message.orElse(new Message()),
-                message.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+        if (message.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message is not found");
+        } else {
+            return new ResponseEntity<>(message.get(), HttpStatus.OK);
+        }
     }
 
     @Override
     @PostMapping("/")
     public ResponseEntity<Message> save(@RequestBody Message message) {
+        if (message.getPerson() == null) {
+            throw new NullPointerException("Person not specified ");
+        }
+        if (message.getText().length() < 1) {
+            throw new IllegalArgumentException("Text is empty");
+        }
         return new ResponseEntity<>(
                 this.service.save(message),
                 HttpStatus.CREATED
@@ -45,6 +53,12 @@ public class MessageController implements Controller<Message> {
     @Override
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Message message) {
+        if (message.getPerson() == null) {
+            throw new NullPointerException("Person not specified ");
+        }
+        if (message.getText().length() < 1) {
+            throw new IllegalArgumentException("Text is empty");
+        }
         this.service.save(message);
         return ResponseEntity.ok().build();
     }
@@ -54,6 +68,9 @@ public class MessageController implements Controller<Message> {
     public ResponseEntity<Void> delete(@PathVariable int id) {
         Message message = new Message();
         message.setId(id);
+        if (service.getById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message is not found");
+        }
         service.delete(message);
         return ResponseEntity.ok().build();
     }

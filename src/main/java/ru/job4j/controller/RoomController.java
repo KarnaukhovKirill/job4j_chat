@@ -3,10 +3,10 @@ package ru.job4j.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 import ru.job4j.service.Service;
-
 import java.util.List;
 
 @RestController
@@ -27,16 +27,20 @@ public class RoomController implements Controller<Room> {
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<Room> getById(@PathVariable int id) {
-        var message = service.getById(id);
-        return new ResponseEntity<>(
-                message.orElse(new Room()),
-                message.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+        var room = service.getById(id);
+        if (room.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room is not found");
+        } else {
+            return new ResponseEntity<>(room.get(), HttpStatus.OK);
+        }
     }
 
     @Override
     @PostMapping("/")
     public ResponseEntity<Room> save(@RequestBody Room room) {
+        if (room.getName().length() < 1) {
+            throw new NullPointerException("Room's name is empty");
+        }
         return new ResponseEntity<>(
                 this.service.save(room),
                 HttpStatus.CREATED
@@ -46,6 +50,9 @@ public class RoomController implements Controller<Room> {
     @Override
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Room room) {
+        if (room.getName().length() < 1) {
+            throw new NullPointerException("Room's name is empty");
+        }
         this.service.save(room);
         return ResponseEntity.ok().build();
     }
@@ -55,6 +62,9 @@ public class RoomController implements Controller<Room> {
     public ResponseEntity<Void> delete(@PathVariable int id) {
         Room room = new Room();
         room.setId(id);
+        if (service.getById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room is not found");
+        }
         service.delete(room);
         return ResponseEntity.ok().build();
     }
