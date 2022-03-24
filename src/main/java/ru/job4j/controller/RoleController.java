@@ -20,8 +20,8 @@ public class RoleController implements Controller<Role> {
 
     @Override
     @GetMapping("/")
-    public List<Role> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Role>> getAll() {
+        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
     }
 
     @Override

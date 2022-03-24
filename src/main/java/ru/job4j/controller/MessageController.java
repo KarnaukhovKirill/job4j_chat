@@ -20,8 +20,8 @@ public class MessageController implements Controller<Message> {
 
     @Override
     @GetMapping("/")
-    public List<Message> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Message>> getAll() {
+        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
     }
 
     @Override

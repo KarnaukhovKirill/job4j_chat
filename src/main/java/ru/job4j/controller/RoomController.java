@@ -20,8 +20,8 @@ public class RoomController implements Controller<Room> {
 
     @Override
     @GetMapping("/")
-    public List<Room> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Room>> getAll() {
+        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
     }
 
     @Override
