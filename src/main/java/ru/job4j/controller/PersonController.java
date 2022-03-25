@@ -4,26 +4,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.model.PersonDTO;
 import ru.job4j.model.Person;
 import ru.job4j.model.Role;
 import ru.job4j.repository.RoleRepository;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.Service;
+import ru.job4j.util.ReflectForPatching;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/person")
@@ -131,5 +128,29 @@ public class PersonController implements Controller<Person> {
             put("type", e.getClass());
         }}));
         logger.error(e.getLocalizedMessage());
+    }
+
+    @PostMapping("/example1")
+    public ResponseEntity<Person> save(@RequestBody PersonDTO personDTO) {
+        Role role = roleRepository.findById(personDTO.getRoleId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Person person = Person.of(personDTO.getUsername(), personDTO.getPassword(), role);
+        checkRequestPerson(person);
+        return new ResponseEntity<>(
+                this.service.save(person),
+                HttpStatus.CREATED
+        );
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Person> patchPerson(@RequestBody Person newPerson) throws InvocationTargetException, IllegalAccessException {
+        var currentPerson = service.getById(newPerson.getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ReflectForPatching.reflect(currentPerson, newPerson);
+        service.save(newPerson);
+        return new ResponseEntity<>(
+                this.service.save(newPerson),
+                HttpStatus.CREATED
+        );
     }
 }

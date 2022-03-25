@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 import ru.job4j.service.Service;
+import ru.job4j.util.ReflectForPatching;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -67,5 +69,17 @@ public class RoomController implements Controller<Room> {
         }
         service.delete(room);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Room> patchRoom(@RequestBody Room newRoom) throws InvocationTargetException, IllegalAccessException {
+        var currentRoom = service.getById(newRoom.getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ReflectForPatching.reflect(currentRoom, newRoom);
+        service.save(newRoom);
+        return new ResponseEntity<>(
+                this.service.save(newRoom),
+                HttpStatus.CREATED
+        );
     }
 }

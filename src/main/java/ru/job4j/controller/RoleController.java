@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Role;
 import ru.job4j.service.RoleService;
 import ru.job4j.service.Service;
+import ru.job4j.util.ReflectForPatching;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -67,5 +69,17 @@ public class RoleController implements Controller<Role> {
         }
         service.delete(role);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Role> patchRole(@RequestBody Role newRole) throws InvocationTargetException, IllegalAccessException {
+        var currentRole = service.getById(newRole.getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ReflectForPatching.reflect(currentRole, newRole);
+        service.save(newRole);
+        return new ResponseEntity<>(
+                this.service.save(newRole),
+                HttpStatus.CREATED
+        );
     }
 }

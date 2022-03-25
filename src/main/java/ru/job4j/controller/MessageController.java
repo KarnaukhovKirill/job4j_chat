@@ -7,6 +7,9 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Message;
 import ru.job4j.service.MessageService;
 import ru.job4j.service.Service;
+import ru.job4j.util.ReflectForPatching;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -73,5 +76,17 @@ public class MessageController implements Controller<Message> {
         }
         service.delete(message);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Message> patchMessage(@RequestBody Message newMessage) throws InvocationTargetException, IllegalAccessException {
+        var currentMessage = service.getById(newMessage.getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ReflectForPatching.reflect(currentMessage, newMessage);
+        service.save(newMessage);
+        return new ResponseEntity<>(
+                this.service.save(newMessage),
+                HttpStatus.CREATED
+        );
     }
 }
