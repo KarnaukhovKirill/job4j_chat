@@ -1,6 +1,7 @@
 package ru.job4j.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +11,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(unique = true)
+    @Pattern(regexp = "^ROLE_(.{3,})", message = "Role must start with a pattern 'ROLE_' "
+            + "and must have more than 3 characters after it")
     private String name;
 
     public Role() {

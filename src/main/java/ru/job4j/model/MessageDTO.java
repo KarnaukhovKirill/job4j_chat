@@ -1,8 +1,14 @@
 package ru.job4j.model;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class MessageDTO {
+    @NotNull(message = "Please, enter person's id")
     private int personId;
+    @NotBlank(message = "Please, write text. Message must be non null")
     private String text;
+    @NotNull(message = "Please, enter room's id")
     private int roomId;
 
     public MessageDTO() {

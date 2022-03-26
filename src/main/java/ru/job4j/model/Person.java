@@ -1,6 +1,8 @@
 package ru.job4j.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -10,11 +12,14 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(unique = true, nullable = false)
+    @Size(min = 2, message = "Username must be greater then 2")
     private String username;
     @Column(nullable = false)
+    @Size(min = 6, message = "Username must be greater then 6")
     private String password;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "role_id")
+    @NotNull(message = "Please, indicate the role")
     private Role role;
 
     public Person() {

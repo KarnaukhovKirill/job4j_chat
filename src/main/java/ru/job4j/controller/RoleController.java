@@ -8,6 +8,7 @@ import ru.job4j.model.Role;
 import ru.job4j.service.RoleService;
 import ru.job4j.service.Service;
 import ru.job4j.util.ReflectForPatching;
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class RoleController implements Controller<Role> {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Role> patchRole(@RequestBody Role newRole) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Role> patchRole(@Valid @RequestBody Role newRole) throws InvocationTargetException, IllegalAccessException {
         var currentRole = service.getById(newRole.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ReflectForPatching.reflect(currentRole, newRole);

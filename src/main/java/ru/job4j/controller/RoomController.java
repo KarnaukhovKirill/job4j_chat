@@ -8,6 +8,7 @@ import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 import ru.job4j.service.Service;
 import ru.job4j.util.ReflectForPatching;
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class RoomController implements Controller<Room> {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Room> patchRoom(@RequestBody Room newRoom) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Room> patchRoom(@Valid @RequestBody Room newRoom) throws InvocationTargetException, IllegalAccessException {
         var currentRoom = service.getById(newRoom.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ReflectForPatching.reflect(currentRoom, newRoom);

@@ -1,6 +1,7 @@
 package ru.job4j.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
@@ -12,6 +13,7 @@ public class Message {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
+    @NotBlank(message = "Please, write text. Message must be non null")
     private String text;
 
     public Message() {

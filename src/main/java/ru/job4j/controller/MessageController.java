@@ -8,7 +8,7 @@ import ru.job4j.model.Message;
 import ru.job4j.service.MessageService;
 import ru.job4j.service.Service;
 import ru.job4j.util.ReflectForPatching;
-
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class MessageController implements Controller<Message> {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Message> patchMessage(@RequestBody Message newMessage) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Message> patchMessage(@Valid @RequestBody Message newMessage) throws InvocationTargetException, IllegalAccessException {
         var currentMessage = service.getById(newMessage.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ReflectForPatching.reflect(currentMessage, newMessage);

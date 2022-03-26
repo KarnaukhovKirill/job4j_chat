@@ -17,6 +17,7 @@ import ru.job4j.service.Service;
 import ru.job4j.util.ReflectForPatching;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -83,6 +84,7 @@ public class PersonController implements Controller<Person> {
         if (person.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password must be greater than 6 letters");
         }
+        person.setPassword(encoder.encode(person.getPassword()));
         if (person.getRole() == null) {
             throw new IllegalArgumentException("Role not specified");
         }
@@ -106,7 +108,7 @@ public class PersonController implements Controller<Person> {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person) {
+    public ResponseEntity<Person> signUp(@Valid @RequestBody Person person) {
         if (person.getUsername() == null || person.getPassword() == null) {
             throw new NullPointerException("Password of username is empty");
         }
@@ -131,7 +133,7 @@ public class PersonController implements Controller<Person> {
     }
 
     @PostMapping("/example1")
-    public ResponseEntity<Person> save(@RequestBody PersonDTO personDTO) {
+    public ResponseEntity<Person> save(@Valid @RequestBody PersonDTO personDTO) {
         Role role = roleRepository.findById(personDTO.getRoleId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Person person = Person.of(personDTO.getUsername(), personDTO.getPassword(), role);
@@ -143,7 +145,7 @@ public class PersonController implements Controller<Person> {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Person> patchPerson(@RequestBody Person newPerson) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Person> patchPerson(@Valid @RequestBody Person newPerson) throws InvocationTargetException, IllegalAccessException {
         var currentPerson = service.getById(newPerson.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ReflectForPatching.reflect(currentPerson, newPerson);

@@ -1,6 +1,7 @@
 package ru.job4j.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(nullable = false)
+    @NotBlank(message = "Room's name must be not empty")
     private String name;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Message> messages;
