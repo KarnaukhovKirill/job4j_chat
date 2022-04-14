@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ru.job4j.repository.UserDetailServiceImp;
+import ru.job4j.service.UserDetailServiceImp;
 
 import static ru.job4j.auth.JWTAuthenticationFilter.SIGN_UP_URL;
 
