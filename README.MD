@@ -30,4 +30,4 @@
 Пример команды после аутентификации. В данном примере получаем все сообщения. Список всех команд будет описан позже.
 ![alt text](https://github.com/KarnaukhovKirill/job4j_chat/blob/main/img/getMessage.png)
 
-[![Java CI with Maven](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml/badge.svg?branch=main&event=status)](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml)
+[![Java CI with Maven](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml/badge.svg)](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml)
