@@ -1,9 +1,6 @@
-create database chat;
-
-create table messages (
+create table roles (
     id serial primary key,
-    text text,
-    person_id int references persons(id) not null
+    name varchar(255) unique not null
 );
 
 create table persons (
@@ -13,9 +10,10 @@ create table persons (
     role_id int references roles(id) not null
 );
 
-create table roles (
+create table messages (
     id serial primary key,
-    name varchar(255) unique not null
+    text text,
+    person_id int references persons(id) not null
 );
 
 create table rooms (
