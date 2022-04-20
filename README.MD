@@ -59,4 +59,60 @@ curl -H 'Authorization: Bearer Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzd
 ````
 ![alt text](https://github.com/KarnaukhovKirill/job4j_chat/blob/main/img/getMessage.png)
 
+## Как запустить приложение в Kubernetes 
+Скачиваем и устанавливаем kubertl
+```
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+```
+````
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+````
+Скачиваем и устанавливаем minikube
+````
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+````
+```
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
+Будем использовать docker дефолтным провайдером контейнеров
+Запускаем кластер
+````
+minikube start
+````
+Для конфигурирования нужно скачать 4 файла. 
+````
+wget https://raw.githubusercontent.com/KarnaukhovKirill/job4j_chat/main/k8s/postgresdb-configmap.yml
+````
+````
+wget https://raw.githubusercontent.com/KarnaukhovKirill/job4j_chat/main/k8s/postgresdb-deployment.yml
+````
+````
+wget https://raw.githubusercontent.com/KarnaukhovKirill/job4j_chat/main/k8s/postgresdb-secret.yml
+````
+````
+wget https://github.com/KarnaukhovKirill/job4j_chat/blob/main/k8s/spring-boot-deployment.yml
+````
+Для хранения имени пользователя и пароля создадит secret. По-умолчанию, логин: "postgres" , пароль: "password". 
+Данные закодированы в base64. 
+````
+kubectl apply -f postgresdb-secret.yml
+````
+Создаём конфигурацию для базы данных. 
+````
+kubectl apply -f postgresdb-configmap.yml
+````
+Создадим deployment для Postgres. 
+````
+kubectl apply -f postgresdb-deployment.yml
+````
+Создадим deployment для job4j_chat. Нужный image скачается с репозитория DockerHub
+````
+kubectl apply -f spring-boot-deployment.yml
+````
+Готово! Чтобы узнать адрес, по которому доступен сервис, введите команду
+````
+minikube service --url spring-boot-service
+````
+Все запросы должны быть адресованы по этому url. 
+
 [![Java CI with Maven](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml/badge.svg)](https://github.com/KarnaukhovKirill/job4j_chat/actions/workflows/github-actions-demo.yml)
